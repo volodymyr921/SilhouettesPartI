@@ -1,25 +1,26 @@
 package com.shpp.p2p.cs.vomelianchuk.assignment12;
 
 public class Pixel {
-    private final long red;
-    private final long green;
-    private final long blue;
 
-    public Pixel(long red, long green, long blue) {
+    private final int red;
+    private final int green;
+    private final int blue;
+
+    public Pixel(int red, int green, int blue) {
         this.red = red;
         this.green = green;
         this.blue = blue;
     }
 
-    public long getRed() {
+    public int getRed() {
         return red;
     }
 
-    public long getGreen() {
+    public int getGreen() {
         return green;
     }
 
-    public long getBlue() {
+    public int getBlue() {
         return blue;
     }
 }
