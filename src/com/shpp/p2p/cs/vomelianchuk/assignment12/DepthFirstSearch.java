@@ -3,21 +3,38 @@ package com.shpp.p2p.cs.vomelianchuk.assignment12;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DepthFirstSearch.java
+ * ---------------------
+ * The class that is responsible for counting silhouettes
+ * using a recursive depth-first search to "walk" the silhouette,
+ * as well as discarding small garbage for correct counting
+ */
 public class DepthFirstSearch {
+    // Percentage threshold from the largest silhouette, anything less is small garbage
     private static final double GARBAGE_SIZE = 0.05;
 
+    // Image in the form of a numerical matrix, where silhouette pixels = 1, and background pixels = 0
     private final Integer[][] matrixImage;
-    int[][] directions;
+
+    // List to which the total number of pixels of each silhouette will be written
     List<Integer> pixelsSilhouettes;
 
     public DepthFirstSearch(Integer[][] matrixImage) {
         this.matrixImage = matrixImage;
-        directions = new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
         pixelsSilhouettes = new ArrayList<>();
     }
 
+    /**
+     * The method that, on finding a 1 in the array,
+     * runs a depth-first recursive search to find
+     * the total number of silhouette pixels,
+     * and calls a method that discards the small garbage
+     * and counts the total number of silhouettes
+     *
+     * @return Number of silhouettes
+     */
     public int calculateNumberOfSilhouettes() {
-
         for (int i = 0; i < matrixImage.length; i++) {
             for (int j = 0; j < matrixImage[0].length; j++) {
                 if (matrixImage[i][j] == 1) {
@@ -25,37 +42,59 @@ public class DepthFirstSearch {
                 }
             }
         }
-        return garbageDisposal();
+
+        return garbageDisposalAndCountSilhouettes();
     }
 
-    private int garbageDisposal() {
-        int amount = 0;
+    /**
+     * Throws away fine garbage from silhouette counting.
+     * If the number of pixels of the silhouette is less than 5% of the number
+     * of pixels of the largest silhouette, then we consider it garbage.
+     * Then we count the total number of silhouettes
+     *
+     * @return Number of silhouettes
+     */
+    private int garbageDisposalAndCountSilhouettes() {
+        int amountSilhouettes = 0;
         int maxPixels = 0;
+
+        // look for the silhouette with the highest number of pixels
         for (int pixels : pixelsSilhouettes) {
             maxPixels = Math.max(maxPixels, pixels);
-            //System.out.println("PIXELS: " + pixels);
         }
+        // count the number of silhouettes, without small garbage
         for (int pixels : pixelsSilhouettes) {
             if ((double) pixels / maxPixels > GARBAGE_SIZE) {
-                amount++;
+                amountSilhouettes++;
             }
         }
-        return amount;
+
+        return amountSilhouettes;
     }
 
-    private int searchDepthFirst(int row, int col) {
+    /**
+     * The method of recursive search in depth for "bypassing" the silhouette.
+     * Calculate the number of pixels in the silhouette
+     *
+     * @param indexRow The index of the current row
+     * @param indexCol The index of the current column
+     * @return  The number of pixels in the silhouette
+     */
+    private int searchDepthFirst(int indexRow, int indexCol) {
+        // check whether it does not go beyond the matrix
+        if(indexRow < 0 || indexRow >= matrixImage.length || indexCol < 0 || indexCol >= matrixImage[0].length) return 0;
 
-        if(row < 0 || row >= matrixImage.length || col < 0 || col >= matrixImage[0].length) return 0;
-        if(matrixImage[row][col] != 1) return 0;
-        matrixImage[row][col] = 0;
+        // check if this pixel belongs to the background
+        if(matrixImage[indexRow][indexCol] != 1) return 0;
 
+        matrixImage[indexRow][indexCol] = 0;
         int pixels = 1;
-        for (int[] direction : directions) {
-            int di = direction[0];
-            int dj = direction[1];
 
-            pixels += searchDepthFirst(row + di, col + dj);
-        }
+        // call the recursive method on all pixels adjacent to this one
+        pixels += searchDepthFirst(indexRow , indexCol + 1);
+        pixels += searchDepthFirst(indexRow + 1, indexCol);
+        pixels += searchDepthFirst(indexRow, indexCol - 1);
+        pixels += searchDepthFirst(indexRow - 1, indexCol);
 
         return pixels;
     }
