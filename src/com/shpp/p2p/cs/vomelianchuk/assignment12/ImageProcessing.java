@@ -5,10 +5,21 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * ImageProcessing.java
+ * --------------------
+ * The class receives the file, processes it and returns the image
+ */
 public class ImageProcessing {
     private String file;
     private BufferedImage image;
 
+    /**
+     * Create an object: the name or path of the picture,
+     * if it is not present, it creates the picture by default
+     *
+     * @param pathName The path to the image name
+     */
     public ImageProcessing(String[] pathName) {
         try {
             file = pathName[0];
@@ -17,6 +28,12 @@ public class ImageProcessing {
         }
 
     }
+
+    /**
+     * Read an image from filename and return it
+     *
+     * @return The image object
+     */
     public BufferedImage getProcessedImage() {
         try {
             image = ImageIO.read(new File(file));
@@ -31,6 +48,11 @@ public class ImageProcessing {
         return image;
     }
 
+    /**
+     * Return the name of the file
+     *
+     * @return The name of the file
+     */
     public String getNameFile() {
         return file;
     }
